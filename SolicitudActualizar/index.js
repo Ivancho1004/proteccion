@@ -17,11 +17,12 @@ debugger;
     try {
         let promises = [];
 
-        let name = "Permissions";
+        let name = "Actualizar";
         Permissions = _.find(data.inputs.input.data.config.api, { name: name });
         debugger;
         if (Permissions) {
-            let requestPermissions = JSON.stringify(data.inputs.input.data.dataUsoInmediato);
+            debugger
+            let requestPermissions = JSON.stringify(data.inputs.input.data.actualizar);
                 let responsePermissions = Invoke(requestPermissions, Permissions, name);
                 promises.push(responsePermissions);
         }
@@ -46,13 +47,13 @@ Invoke = (data, Disbursements, name) => {
                 method: Disbursements.detail.method,
                 headers: {}
             };
-
+            debugger
             for (let parametro of Disbursements.header.params) {
                 if (parametro.enable) {
                     options.headers[parametro.name] = parametro.value;
                 }
             }
-
+            debugger
             var HTTP = Disbursements.detail.port === 443 ? https : http;
             const req = HTTP.request(options, (response) => {
                 let httpStatusCode = response.statusCode;
@@ -60,6 +61,7 @@ Invoke = (data, Disbursements, name) => {
                 let json = null;
 
                 response.on('data', (out) => {
+                    debugger
                     if (Buffer.isBuffer(out)) {
                         data += out
                     }
