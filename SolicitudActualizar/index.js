@@ -5,8 +5,7 @@
  const _ = require('lodash');
  const http = require('http');
  const https = require('https');
- var log4js = require("log4js");
- var logger = log4js.getLogger();
+
 
  process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
  debugger;
@@ -14,8 +13,7 @@
  var output = {};
 debugger;
  function invoke(globals, actionName, data, authenticationType, LOG, callback) {
-    logger.info('log to file');
-    
+        
     debugger;
     try {
         let promises = [];
