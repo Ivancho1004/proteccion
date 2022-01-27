@@ -24,7 +24,8 @@ let requestBizagi = {
                                 "method": 'POST',
                                 "hostname": "internal-albeksqa2-1876233188.us-east-1.elb.amazonaws.com",
                                 "port": 8590,
-                                "path": "/api/solicitud/actualizar"
+                                "path": "/api/solicitud/actualizar",
+                                "ssl": true
                             }
                         }
                     ]

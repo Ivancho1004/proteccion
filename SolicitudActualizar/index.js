@@ -5,7 +5,8 @@
  const _ = require('lodash');
  const http = require('http');
  const https = require('https');
- 
+ var log4js = require("log4js");
+ var logger = log4js.getLogger();
 
  process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
  debugger;
@@ -13,17 +14,26 @@
  var output = {};
 debugger;
  function invoke(globals, actionName, data, authenticationType, LOG, callback) {
+    logger.info('log to file');
+    
     debugger;
     try {
         let promises = [];
 
         let name = "Actualizar";
-        Permissions = _.find(data.inputs.input.data.config.api, { name: name });
+        configApi = _.find(data.inputs.input.data.config.api, { name: name });
         debugger;
-        if (Permissions) {
+        if (configApi) {
             debugger
             let requestPermissions = JSON.stringify(data.inputs.input.data.actualizar);
-                let responsePermissions = Invoke(requestPermissions, Permissions, name);
+                let responsePermissions = Invoke(requestPermissions
+                    , configApi.detail.hostname
+                    , configApi.detail.path
+                    , configApi.detail.port
+                    , configApi.detail.method
+                    , configApi.header.params
+                    , configApi.name
+                    , configApi.detail.ssl);
                 promises.push(responsePermissions);
         }
 
@@ -31,6 +41,8 @@ debugger;
             let response = {
                 response: values,
             };
+            debugger
+            console.log('response: '+JSON.stringify(response));
         });
     }
     catch (e) {
@@ -38,55 +50,51 @@ debugger;
     }
 }
 
-Invoke = (data, Disbursements, name) => {
+Invoke = (data, hostname, path, port, method, paramsHeader, name, ssl) => {
     return new Promise((resolve) => {
         try {
             const options = {
-                hostname: Disbursements.detail.hostname,
-                path: Disbursements.detail.path,
-                method: Disbursements.detail.method,
+                hostname: hostname,
+                path: path,
+                method: method,
+                port: port,
                 headers: {}
             };
             debugger
-            for (let parametro of Disbursements.header.params) {
+            for (let parametro of paramsHeader) {
                 if (parametro.enable) {
                     options.headers[parametro.name] = parametro.value;
                 }
             }
             debugger
-            var HTTP = Disbursements.detail.port === 443 ? https : http;
-            const req = HTTP.request(options, (response) => {
+            let client = ssl ? https : http;
+            const req = client.request(options, (response) => {
+                debugger
                 let httpStatusCode = response.statusCode;
-                let data = '';
-                let json = null;
-
                 response.on('data', (out) => {
-                    debugger
+                    let json = null;
                     if (Buffer.isBuffer(out)) {
-                        data += out
+                        json = out.toString('utf8');
+                        json = JSON.parse(json);
                     }
                     else {
                         json = JSON.parse(out);
-                    }
-                });
 
-                response.on('end', () => {
-                    if (!json) {
-                        json = data.toString('utf8');
-                        json = JSON.parse(data);
                     }
-
                     if (httpStatusCode === 200) {
-                        resolve({ valido: true, response: json, error: ''});
+                        resolve({ valido: true, response: json, error: '', name: name });
                     }
                     else {
-                        resolve({ valido: false, error: json, response: '' });
+                        json.name = name;
+                        resolve({ valido: false, error: json, response: '', name: name });
                     }
-                });
 
+                });
             });
 
             req.on('error', error => {
+                debugger
+                console.log('error'+error);
                 error.name = name;
                 resolve({ valido: false, error: error, response: '', name: name });
             });
@@ -95,6 +103,7 @@ Invoke = (data, Disbursements, name) => {
             req.end();
         }
         catch (e) {
+            debugger
             e.name = name;
             resolve({ valido: false, error: e, response: '', name: name });
         }
