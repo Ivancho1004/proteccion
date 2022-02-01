@@ -10,7 +10,8 @@
     "node-rest-client": "^3.1.0",
     "parse-multipart": "^1.0.4",
     "save": "^2.4.0",
-    "xml-js": "^1.6.11"
+    "xml-js": "^1.6.11",
+    "ssh2-sftp-client": "5.2.1"
   },
   "devDependencies": {
     "clean-webpack-plugin": "^4.0.0"
