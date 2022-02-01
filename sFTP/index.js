@@ -64,9 +64,9 @@ function invoke(globals, actionName, data, authenticationType, LOG, callback) {
     const USERNAME = globals.authdata.USERNAME;
     const PASSWORD = globals.authdata.PASSWORD;
 
-    const remote_path = data.inputs.input.remote_path;
+    let remote_path = data.inputs.input.remote_path;
     const file_data = data.inputs.input.data;
-    
+    remote_path = "E:/IntegracionSFDC/Import/CARGAINFOSERVICIOS/QATAREAS/data/PlantillaSalesForce-2022_1720.csv";
     //Required parameters validation
     /*var validationError = bizagiUtil.validator.requiredParameters({
         'remote_path': remote_path,
@@ -87,13 +87,13 @@ function invoke(globals, actionName, data, authenticationType, LOG, callback) {
     var sftp = new Client();
 
     sftp.on('error', function (err) {
-        LOG.error(['[SFTP.', actionName, '] Error: ', err]);
+        //LOG.error(['[SFTP.', actionName, '] Error: ', err]);
+        console.log(['[SFTP error.', actionName, '] Error: ', err]);
     });
 
     sftp.on('close', function (err) {
-        LOG.debug(['[SFTP.', actionName, '] ClosedWithError: ', err]);
+        console.log(['[SFTP close.', actionName, '] ClosedWithError: ', err]);
     });
-    
 
     var fileData = new Buffer(file_data, 'base64');
     var options = {
@@ -102,6 +102,7 @@ function invoke(globals, actionName, data, authenticationType, LOG, callback) {
         mode: 0o666, // mode to use for created file (rwx)
         autoClose: true // automatically close the write stream when finished
     }
+    debugger
     sftp.connect({
             host: HOST,
             port: PORT,
@@ -109,21 +110,26 @@ function invoke(globals, actionName, data, authenticationType, LOG, callback) {
             password: PASSWORD
         })
         .then(function () {
+            debugger
             return sftp.put(fileData, remote_path, options);
         })
         .then(function (data) {
+            debugger
             var output = {
                 success: true
             };
-            var success = RESPONSE(output, null, 200);
-            callback(success);
+            var success = output;//; RESPONSE(output, null, 200);
+            console.log(success);
+            //callback(success);
             sftp.end();
             return;
         }).catch(function (err) {
-            LOG.error(['[SFTP.', actionName, '] Error: ', err]);
+            debugger
+            //LOG.error(['[SFTP.', actionName, '] Error: ', err]);
             var errorObject = formatError(err);
-            var error = RESPONSE(null, errorObject, errorObject.status, errorObject.message);
-            callback(error);
+            var error = errorObject;//RESPONSE(null, errorObject, errorObject.status, errorObject.message);
+            console.log(error);
+            //callback(error);
             sftp.end();
             return;
         });
