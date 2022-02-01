@@ -57,7 +57,7 @@ Invoke = (data, hostname, path, port, method, paramsHeader, name, ssl) => {
                 hostname: hostname,
                 path: path,
                 method: method,
-               // port: port,
+                port: port,
                 headers: {},
                 'maxRedirects': 20
             };
