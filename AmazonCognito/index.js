@@ -1,15 +1,16 @@
 /**
  * @author Proteecion
  */
-
+debugger
  const _ = require('lodash');
  const http = require('http');
  const https = require('https');
-
+ var qs = require('querystring');
 
  //process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
  debugger;
  const input = require('./input');
+const { devNull } = require('os');
  var output = {};
 debugger;
  function invoke(globals, actionName, data, authenticationType, LOG, callback) {
@@ -17,13 +18,14 @@ debugger;
     debugger;
     try {
         let promises = [];
-
-        let name = "Actualizar";
+        let name = "amazoncognito";
         configApi = _.find(data.inputs.input.data.config.api, { name: name });
         debugger;
         if (configApi) {
             debugger
-            let requestPermissions = JSON.stringify(data.inputs.input.data.actualizar);
+            let requestPermissions = data.inputs.input.data.amazoncognito;
+            
+            debugger
                 let responsePermissions = Invoke(requestPermissions
                     , configApi.detail.hostname
                     , configApi.detail.path
@@ -51,12 +53,13 @@ debugger;
 Invoke = (data, hostname, path, port, method, paramsHeader, name, ssl) => {
     return new Promise((resolve) => {
         try {
-            const options = {
+            let options = {
                 hostname: hostname,
                 path: path,
                 method: method,
-                port: port,
-                headers: {}
+               // port: port,
+                headers: {},
+                'maxRedirects': 20
             };
             debugger
             for (let parametro of paramsHeader) {
@@ -64,7 +67,7 @@ Invoke = (data, hostname, path, port, method, paramsHeader, name, ssl) => {
                     options.headers[parametro.name] = parametro.value;
                 }
             }
-            debugger
+    
             let client = ssl ? https : http;
             const req = client.request(options, (response) => {
                 debugger
@@ -96,8 +99,8 @@ Invoke = (data, hostname, path, port, method, paramsHeader, name, ssl) => {
                 error.name = name;
                 resolve({ valido: false, error: error, response: '', name: name });
             });
-
-            req.write(data);
+            debugger
+            req.write(qs.stringify(data));
             req.end();
         }
         catch (e) {
