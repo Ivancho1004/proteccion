@@ -93,6 +93,7 @@ function invoke(globals, actionName, data, authenticationType, LOG, callback) {
     sftp.on('close', function (err) {
         LOG.debug(['[SFTP.', actionName, '] ClosedWithError: ', err]);
     });
+    
 
     var fileData = new Buffer(file_data, 'base64');
     var options = {
