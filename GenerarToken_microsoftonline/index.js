@@ -4,7 +4,7 @@
 
  const _ = require('lodash');
  const http = require('http');
- let https = require('follow-redirects').https;
+ const https = require('https');
  var qs = require('querystring');
  var request = require('request');
  process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
@@ -18,14 +18,13 @@ debugger;
     try {
         let promises = [];
 
-        let name = "Token_Lagash";
+        let name = "token_microsoftonline";
         configApi = _.find(data.inputs.input.data.config.api, { name: name });
         debugger;
         if (configApi) {
             debugger
-            let requestPermissions = JSON.stringify(data.inputs.input.data.formData);
+            let requestPermissions = JSON.stringify(data.inputs.input.data.token_microsoftonline);
             requestPermissions = data.inputs.input.data.token_microsoftonline;
-            requestPermissions = data.inputs.input.data.formData;
                 let responsePermissions = Invoke(requestPermissions
                     , configApi.detail.hostname
                     , configApi.detail.path
@@ -53,21 +52,20 @@ debugger;
 Invoke = (data, hostname, path, port, method, paramsHeader, name, ssl) => {
     return new Promise((resolve) => {
         try {
-            let options = {
+            debugger
+            data;
+            var options = {
                 'method': method,
                 'url': 'https://'+hostname+path,
                 headers: {},
                 form: data
-            };
-            debugger
+              };
             for (let parametro of paramsHeader) {
                 if (parametro.enable) {
                     options.headers[parametro.name] = parametro.value;
                 }
             }
-           
             debugger
-            let client = ssl ? https : http;
             request(options, function (error, response) {
                 debugger
                 let httpStatusCode = response.statusCode;
@@ -82,7 +80,6 @@ Invoke = (data, hostname, path, port, method, paramsHeader, name, ssl) => {
                 resolve({ valido: false, error: json, response: '', name: name });
             }
             });
-
             
         }
         catch (e) {

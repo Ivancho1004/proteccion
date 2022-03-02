@@ -18,12 +18,12 @@ debugger;
     try {
         let promises = [];
 
-        let name = "Actualizar";
+        let name = "Actualizar_solicitud";
         configApi = _.find(data.inputs.input.data.config.api, { name: name });
         debugger;
         if (configApi) {
             debugger
-            let requestPermissions = JSON.stringify(data.inputs.input.data.actualizar);
+            let requestPermissions = JSON.stringify(data.inputs.input.data.actualizar_solicitud);           
                 let responsePermissions = Invoke(requestPermissions
                     , configApi.detail.hostname
                     , configApi.detail.path
