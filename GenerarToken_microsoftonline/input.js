@@ -1,9 +1,9 @@
 let requestBizagi = {
     "inputs": {
         "input": {
-            "data": {
+            
                 "config":{
-                   "api":[
+                   "api":
                       {
                          "name":"token_microsoftonline",
                          "header":{
@@ -28,7 +28,7 @@ let requestBizagi = {
                             "ssl":true
                          }
                       }
-                   ]
+                   
                 },
                 "token_microsoftonline":{
                    "grant_type":"client_credentials",
@@ -37,7 +37,7 @@ let requestBizagi = {
                    "client_secret":"TqO7Q~lIBNtAgoTem4onL_VFOEwbU8riQrg2k",
                    "scope":"clave_empresarial"
                 }
-             }
+             
         }
     }
 };

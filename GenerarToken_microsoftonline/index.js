@@ -13,18 +13,18 @@
  var output = {};
 debugger;
  function invoke(globals, actionName, data, authenticationType, LOG, callback) {
-        
+    //var sUrlProxy = globals.systemproperties.UrlProxy; 
+    var sUrlProxy = "";//"http://10.66.3.149:8080"; 
     debugger;
     try {
         let promises = [];
 
-        let name = "token_microsoftonline";
-        configApi = _.find(data.inputs.input.data.config.api, { name: name });
+        configApi = data.inputs.input.config.api;
         debugger;
         if (configApi) {
             debugger
-            let requestPermissions = JSON.stringify(data.inputs.input.data.token_microsoftonline);
-            requestPermissions = data.inputs.input.data.token_microsoftonline;
+            let requestPermissions = JSON.stringify(data.inputs.input.token_microsoftonline);
+            requestPermissions = data.inputs.input.token_microsoftonline;
                 let responsePermissions = Invoke(requestPermissions
                     , configApi.detail.hostname
                     , configApi.detail.path
@@ -32,7 +32,11 @@ debugger;
                     , configApi.detail.method
                     , configApi.header.params
                     , configApi.name
-                    , configApi.detail.ssl);
+                    , configApi.detail.ssl
+                    , LOG
+                    , callback
+                    , sUrlProxy
+                    , actionName);
                 promises.push(responsePermissions);
         }
 
@@ -42,24 +46,29 @@ debugger;
             };
             debugger
             console.log('response: '+JSON.stringify(response));
+            /*var success = RESPONSE(output, null, 200);
+            callback(success);
+            LOG.info("output: "+ JSON.stringify(success));*/
         });
     }
     catch (e) {
-
+        //LOG.error(['[', actionName, '] Error al leer la data: ', e.message]);
+        console.log('Error al leer la data: ', e.message);
     }
 }
 
-Invoke = (data, hostname, path, port, method, paramsHeader, name, ssl) => {
+Invoke = (data, hostname, path, port, method, paramsHeader, name,ssl, LOG, callback, sUrlProxy, actionName) => {
     return new Promise((resolve) => {
         try {
             debugger
             data;
-            var options = {
+            let options = {
                 'method': method,
                 'url': 'https://'+hostname+path,
+                proxy: sUrlProxy, 
                 headers: {},
-                form: data
-              };
+                formData: data
+            };
             for (let parametro of paramsHeader) {
                 if (parametro.enable) {
                     options.headers[parametro.name] = parametro.value;
@@ -91,5 +100,5 @@ Invoke = (data, hostname, path, port, method, paramsHeader, name, ssl) => {
 };
 
 
-invoke(null, null, input.requestBizagi, null, null, null);
+invoke(null, "Consumo", input.requestBizagi, null, null, null);
 exports.invoke = invoke;
