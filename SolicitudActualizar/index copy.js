@@ -60,10 +60,16 @@ debugger;
                  //callback(error);
              }
         });
-    }
-    catch (e) {
-        //LOG.error(['[', actionName, '] Error al leer la data: ', e.message]);
-        console.log('Error al leer la data: ', e.message);
+    }catch (e) {
+        /*LOG.error(['[', actionName, '] Error: ', e.message]);
+        var errorResponse = {
+                       "error": -500,
+                       "message": "Error al ejecutar la peticion. Exception: "+e.message,
+                       "status": -500
+                   };
+        var error = RESPONSE(null, errorResponse, 500 );*/
+        console.log(errorResponse);
+        //callback(error);
     }
 }
 
