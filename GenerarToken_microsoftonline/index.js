@@ -13,83 +13,72 @@
  var output = {};
 debugger;
  function invoke(globals, actionName, data, authenticationType, LOG, callback) {
-        
+    //var sUrlProxy = globals.systemproperties.UrlProxy; 
+    var sUrlProxy = "";//"http://10.66.3.149:8080"; 
     debugger;
     try {
         let promises = [];
 
-        let name = "token_microsoftonline";
-        configApi = _.find(data.inputs.input.data.config.api, { name: name });
+        configApi = data.inputs.input.config.api;
         debugger;
-        if (configApi) {
-            debugger
-            let requestPermissions = JSON.stringify(data.inputs.input.data.token_microsoftonline);
-            requestPermissions = data.inputs.input.data.token_microsoftonline;
-                let responsePermissions = Invoke(requestPermissions
-                    , configApi.detail.hostname
-                    , configApi.detail.path
-                    , configApi.detail.port
-                    , configApi.detail.method
-                    , configApi.header.params
-                    , configApi.name
-                    , configApi.detail.ssl);
-                promises.push(responsePermissions);
+        let requestPermissions = JSON.stringify(data.inputs.input.token_microsoftonline);   
+        requestPermissions = data.inputs.input.token_microsoftonline;    
+        var method = configApi.detail.method; 
+        var paramsHeader = configApi.header.params;
+        var hostname = configApi.detail.hostname;
+        var path = configApi.detail.path;
+        var port = configApi.detail.port;
+        var ssl = configApi.detail.ssl;
+        debugger
+        let options = {
+            'method': method,
+            'url': 'https://'+hostname+path,
+            headers: {},
+            proxy: sUrlProxy,
+            formData: requestPermissions
+        };
+        for (let parametro of paramsHeader) {
+            if (parametro.enable) {
+                options.headers[parametro.name] = parametro.value;
+            }
         }
-
-        Promise.all(promises).then(values => {
-            let response = {
-                response: values,
-            };
+       debugger
+        let client = ssl ? https : http;
+        request(options, function (error, response) {
             debugger
-            console.log('response: '+JSON.stringify(response));
+            var json = JSON.parse(response.body);
+            debugger
+            if (response.statusCode === 200) {               
+                //var success = RESPONSE(json, null, 200);
+                console.log(json);
+                //callback(success);
+             } else {
+                 var errorResponse = {
+                        "error": response.statusCode ,
+                        "message": json.Message,
+                        "status": json.StatusCode
+                    };
+                // error = RESPONSE(null, errorResponse, 500);
+                 console.log(errorResponse)
+                 //callback(error);
+             }
         });
     }
     catch (e) {
-
+        /*LOG.error(['[', actionName, '] Error: ', e.message]);
+        var errorResponse = {
+                       "error": -500,
+                       "message": "Error al ejecutar la peticion. Exception: "+e.message,
+                       "status": -500
+                   };
+        var error = RESPONSE(null, errorResponse, 500 );*/
+        console.log(errorResponse);
+        //callback(error);
     }
 }
 
-Invoke = (data, hostname, path, port, method, paramsHeader, name, ssl) => {
-    return new Promise((resolve) => {
-        try {
-            debugger
-            data;
-            var options = {
-                'method': method,
-                'url': 'https://'+hostname+path,
-                headers: {},
-                form: data
-              };
-            for (let parametro of paramsHeader) {
-                if (parametro.enable) {
-                    options.headers[parametro.name] = parametro.value;
-                }
-            }
-            debugger
-            request(options, function (error, response) {
-                debugger
-                let httpStatusCode = response.statusCode;
-              if (error) throw new Error(error);
-              //console.log(response.body);
-              var json = JSON.parse(response.body);
-              if (httpStatusCode === 200) {
-                resolve({ valido: true, response: json, error: '', name: name });
-            }
-            else {
-                json.name = name;
-                resolve({ valido: false, error: json, response: '', name: name });
-            }
-            });
-            
-        }
-        catch (e) {
-            debugger
-            e.name = name;
-            resolve({ valido: false, error: e, response: '', name: name });
-        }
-    });
-};
 
 
-invoke(null, null, input.requestBizagi, null, null, null);
+
+invoke(null, "Consumo", input.requestBizagi, null, null, null);
 exports.invoke = invoke;
