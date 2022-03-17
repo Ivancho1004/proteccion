@@ -23,7 +23,7 @@ debugger;
         debugger
         paramsHeader = data.inputs.input.Header;
         let requestPermissions = data.inputs.input.Body;    
-
+       
         let options = {
             'method': 'POST',
             'url': UrlLoadFile,
@@ -31,17 +31,17 @@ debugger;
             proxy: sUrlProxy,
             formData: {
                 'file': {
-                  'value': requestPermissions.file,
+                  'value': Buffer.from(requestPermissions.file, 'base64'),
                   'options': {
                     'filename': requestPermissions.fileName,
-                    'contentType': null
+                    //'contentType': null
                   }
                 }
               }
         };
 
        debugger
-        let client = ssl ? https : http;
+        //let client = ssl ? https : http;
         request(options, function (error, response) {
             var json = JSON.parse(response.body);
             debugger
@@ -52,7 +52,7 @@ debugger;
              } else {
                  var errorResponse = {
                         "error": response.statusCode ,
-                        "message": json.Message,
+                        "message": json,
                         "status": json.StatusCode
                     };
                 // error = RESPONSE(null, errorResponse, 500);
